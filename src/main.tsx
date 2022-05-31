@@ -17,8 +17,8 @@ import Workflows from './pages/Workflows';
 import Resources from './pages/Resources';
 import RequireAuth from './components/RequireAuth';
 
-// axios.defaults.baseURL = 'http://api.zerokirin.online/kloud';
-axios.defaults.baseURL = 'http://localhost:1121';
+axios.defaults.baseURL = 'http://api.zerokirin.online/kloud';
+// axios.defaults.baseURL = 'http://localhost:1121';
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
