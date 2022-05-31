@@ -15,9 +15,9 @@ import Apps from './pages/Apps';
 import AppDetail from './pages/AppDetail';
 import Workflows from './pages/Workflows';
 import Resources from './pages/Resources';
+import RequireAuth from './components/RequireAuth';
 
-// axios.defaults.baseURL = 'http://api.zerokirin.online/kloud';
-axios.defaults.baseURL = 'http://localhost:1121';
+axios.defaults.baseURL = 'http://api.zerokirin.online/kloud';
 axios.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -57,15 +57,24 @@ ReactDOM.render(
       <CssBaseline />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />}>
+          <Route
+            path="/"
+            element={
+              <RequireAuth>
+                <Layout />
+              </RequireAuth>
+            }
+          >
             <Route index element={<Home />} />
             <Route path="workflows" element={<Workflows />} />
             <Route path="resources" element={<Resources />} />
-            <Route path="login" element={<Login />} />
-            <Route path="register" element={<Register />} />
             <Route path="settings" element={<Settings />} />
             <Route path="apps" element={<Apps />} />
             <Route path="apps/:id" element={<AppDetail />} />
+          </Route>
+          <Route path="/" element={<Layout />}>
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
           </Route>
         </Routes>
       </BrowserRouter>

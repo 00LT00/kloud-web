@@ -21,7 +21,7 @@ export default function Settings() {
       },
     },
   );
-  const { run: setAsUser, loading: setAsUserLoaing } = useRequest(
+  const { run: setAsUser, loading: setAsUserLoading } = useRequest(
     (id: string) => axios.delete(`/user/admin/${id}`),
     {
       manual: true,
@@ -34,7 +34,7 @@ export default function Settings() {
     },
   );
   const { data: allUsersData } = useRequest(() => axios.get<IUser[]>('/user/all'), {
-    refreshDeps: [setAsAdminLoading, setAsUserLoaing],
+    refreshDeps: [setAsAdminLoading, setAsUserLoading],
   });
 
   return (
@@ -68,7 +68,7 @@ export default function Settings() {
                         auto
                         scale={1 / 3}
                         font="12px"
-                        onClick={() => setAsUser(rowData.id)}
+                        onClick={() => setAsAdmin(rowData.id)}
                       >
                         删除管理权限
                       </Button>

@@ -1,5 +1,5 @@
-import { Button, Card, Code, Input, Loading, Table, Text } from '@geist-ui/core';
-import { SearchIcon } from '@heroicons/react/outline';
+import { Button, Card, Loading, Text } from '@geist-ui/core';
+import { ArrowRightIcon } from '@heroicons/react/outline';
 import { useRequest } from 'ahooks';
 import axios from 'axios';
 import * as dayjs from 'dayjs';
@@ -15,20 +15,10 @@ export default function Apps() {
     <div>
       <div className="border-b border-gray-200 bg-gray-50 py-10">
         <section className="max-w-5xl mx-auto space-y-6">
-          <div className="flex space-x-4">
-            <Input
-              width="100%"
-              className="bg-white"
-              scale={1.25}
-              icon={<SearchIcon />}
-              placeholder="搜索..."
-            />
-            <Button type="secondary">新建应用审批</Button>
-          </div>
           <div className="grid grid-cols-3 gap-4">
             {loading ? (
               <Loading />
-            ) : (
+            ) : data?.data?.length && data?.data?.length > 0 ? (
               data?.data.map((p) => (
                 <Card
                   className="hover:cursor-pointer"
@@ -42,6 +32,25 @@ export default function Apps() {
                   </Text>
                 </Card>
               ))
+            ) : (
+              <>
+                <div />
+                <Card className="mx-auto">
+                  <p className="text-center">当前暂无应用，请去资源页面申请</p>
+                  <p className="text-center">
+                    <Button
+                      type="success"
+                      onClick={() => navigate('/resources')}
+                      scale={0.75}
+                      auto
+                      iconRight={<ArrowRightIcon />}
+                    >
+                      资源页面
+                    </Button>
+                  </p>
+                </Card>
+                <div />
+              </>
             )}
           </div>
         </section>

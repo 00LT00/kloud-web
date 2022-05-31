@@ -34,49 +34,52 @@ export default function Workflows() {
   // });
 
   return (
-    <div>
-      <Headline title="审批">
-        <Button type="secondary">新建审批</Button>
-      </Headline>
-      <div className="border-t border-gray-200 py-10">
-        <section className="max-w-5xl mx-auto">
-          {loading ? (
-            <Loading />
-          ) : (
-            <Table
-              data={flowsData?.data.map((d) => ({
-                ...d,
-                action: (
-                  <div className="space-x-2">
-                    <Button
-                      scale={0.75}
-                      onClick={() => moderate(d.FlowID, '通过', 'pass')}
-                      type="success"
-                      loading={moderateLoading}
-                      auto
-                    >
-                      通过
-                    </Button>
-                    <Button
-                      scale={0.75}
-                      onClick={() => moderate(d.FlowID, '驳回', 'fail')}
-                      type="error"
-                      loading={moderateLoading}
-                      auto
-                    >
-                      驳回
-                    </Button>
-                  </div>
-                ),
-              }))}
-            >
-              <Table.Column prop="FlowID" label="ID" />
-              <Table.Column prop="AppID" label="应用 ID" />
-              <Table.Column prop="action" label="操作" />
-            </Table>
-          )}
-        </section>
+      <div>
+          <Headline title="审批">
+              <Button type="secondary">新建审批</Button>
+          </Headline>
+          <div className="border-t border-gray-200 py-10">
+              <section className="max-w-5xl mx-auto">
+                  {loading ? (
+                      <Loading />
+                  ) : (
+                      <Table
+                          data={flowsData?.data.map((d) => ({
+                              ...d,
+                              action: (
+                                  <div className="space-x-2">
+                                      <Button
+                                          scale={0.75}
+                                          onClick={() =>
+                                              moderate(d.FlowID, "通过", "pass")
+                                          }
+                                          type="success"
+                                          loading={moderateLoading}
+                                          auto
+                                      >
+                                          通过
+                                      </Button>
+                                      <Button
+                                          scale={0.75}
+                                          onClick={() =>
+                                              moderate(d.FlowID, "驳回", "fail")
+                                          }
+                                          type="error"
+                                          loading={moderateLoading}
+                                          auto
+                                      >
+                                          驳回
+                                      </Button>
+                                  </div>
+                              ),
+                          }))}
+                      >
+                          <Table.Column prop="FlowID" label="ID" />
+                          <Table.Column prop="action" label="操作" />
+                      </Table>
+                  )}
+              </section>
+          </div>
       </div>
-    </div>
   );
 }

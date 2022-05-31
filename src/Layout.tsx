@@ -32,7 +32,7 @@ export default function Layout() {
               onClick={() => navigate('/')}
               className="flex items-center space-x-3 hover:cursor-pointer"
             >
-              <span className="text-base leading-5 font-medium">kcloud</span>
+              <span className="text-base leading-5 font-medium">kloud</span>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-4">

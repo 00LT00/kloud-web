@@ -4,28 +4,30 @@ import {
   Input,
   Loading,
   Modal,
+  Select,
   Table,
-  Text,
   useInput,
   useModal,
   useToasts,
 } from '@geist-ui/core';
 import { useRequest } from 'ahooks';
 import axios from 'axios';
-import { memo, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Headline from '../components/Headline';
 
 export default function Resources() {
   const { setVisible, bindings } = useModal(false);
   const { setToast } = useToasts();
   const [dataConfig, setDataConfig] = useState<any>({}); // 存放config数据用于渲染到弹窗
+  const [type, setResourceType] = useState('k8s');
 
   const { state: name, bindings: nameBindings, reset: nameReset } = useInput('');
+  const { state: maxNum, bindings: maxNumBindings, reset: maxNumReset } = useInput('');
   const { state: folder, bindings: folderBindings, reset: folderReset } = useInput('');
-  const { state: type, bindings: typeBindings, reset: typeReset } = useInput('');
+  const { state: flowName, bindings: flowNameBindings, reset: flowNameReset } = useInput('');
 
   const { loading: createResourceLoading, run: createResource } = useRequest(
-    () => axios.post<IResource[]>('/resource', { name, folder, type }),
+    () => axios.post<IResource[]>('/resource', { name, folder, type, max_num: +maxNum }),
     {
       manual: true,
       onSuccess() {
@@ -37,13 +39,9 @@ export default function Resources() {
   useEffect(() => {
     nameReset();
     folderReset();
-    typeReset();
+    maxNumReset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createResourceLoading]);
-
-  const { data: resourcesData } = useRequest(() => axios.get<IResource[]>('/resource'), {
-    refreshDeps: [createResourceLoading],
-  });
 
   const {
     data: resourceDetailData,
@@ -51,43 +49,48 @@ export default function Resources() {
     runAsync: getResourceDetailData,
   } = useRequest((id: string) => axios.get<IResource>(`/resource/${id}`), {
     manual: true,
-    onSuccess() {
-      setToast({ type: 'success', text: '操作成功' });
-    },
     onError() {
       setToast({ type: 'error', text: '操作失败' });
     },
   });
+  const { loading: deleteResourceLoading, run: deleteResource } = useRequest(
+    (id: string) => axios.delete<IResource>(`/resource/${id}`),
+    {
+      manual: true,
+      onSuccess() {
+        setToast({ type: 'success', text: '操作成功' });
+      },
+      onError() {
+        setToast({ type: 'error', text: '操作失败' });
+      },
+    },
+  );
   const { setVisible: setCreateFlowVisible, bindings: createFlowBindings } = useModal(false);
-
   const { run: createFlow, loading: createFlowLoading } = useRequest(
     () =>
       axios.post<IResource>(`/flow`, {
         resource_id: resourceDetailData?.data.resource_id,
-        config: JSON.stringify(dataConfig),
+        name: flowName,
+        config: dataConfig,
       }),
     {
       manual: true,
       onSuccess() {
+        setToast({ type: 'success', text: '操作成功' });
+        flowNameReset();
         setCreateFlowVisible(false);
       },
       ready: !!resourceDetailData,
     },
   );
 
-  // useEffect(() => {
-  //   cpuReset();
-  //   memoryReset();
-  //   detailNameReset();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [createResourceLoading]);
+  const { data: resourcesData } = useRequest(() => axios.get<IResource[]>('/resource'), {
+    refreshDeps: [createResourceLoading, deleteResourceLoading, createFlowLoading],
+  });
 
   useEffect(() => {
-    console.log(resourceDetailData);
     if (!resourceDetailData?.data?.config) return;
-
     const config = resourceDetailData?.data.config;
-
     setDataConfig(config);
   }, [resourceDetailData]);
 
@@ -110,20 +113,37 @@ export default function Resources() {
               <Table.Column prop="type" label="类型" />
               <Table.Column
                 prop="action"
-                render={(value, rowData: any, index) => (
-                  <Button
-                    type="success"
-                    auto
-                    scale={1 / 3}
-                    font="12px"
-                    loading={createFlowLoading || resourceDetailLoading}
-                    onClick={async () => {
-                      await getResourceDetailData(rowData.resource_id);
-                      setCreateFlowVisible(true);
-                    }}
-                  >
-                    申请
-                  </Button>
+                render={(value, rowData: any) => (
+                  <div className="space-x-2">
+                    <Button
+                      type="success"
+                      auto
+                      scale={1 / 3}
+                      font="12px"
+                      loading={createFlowLoading || resourceDetailLoading}
+                      onClick={async () => {
+                        await getResourceDetailData(rowData.resource_id);
+                        setCreateFlowVisible(true);
+                      }}
+                    >
+                      申请
+                    </Button>
+                    <Button
+                      type="error"
+                      auto
+                      scale={1 / 3}
+                      font="12px"
+                      loading={deleteResourceLoading}
+                      onClick={() => {
+                        // eslint-disable-next-line no-alert
+                        if (window.confirm('此操作不可逆，是否继续？')) {
+                          deleteResource(rowData.resource_id);
+                        }
+                      }}
+                    >
+                      删除
+                    </Button>
+                  </div>
                 )}
                 label="操作"
               />
@@ -137,8 +157,18 @@ export default function Resources() {
         <Modal.Title>新建资源</Modal.Title>
         <Modal.Content className="space-y-4">
           <Input width="100%" {...nameBindings} placeholder="资源名称" />
-          <Input width="100%" {...typeBindings} placeholder="资源类型，k8s / helm 可选" />
+          <Select
+            placeholder="选择资源名称"
+            onChange={(e: any) => {
+              setResourceType(e);
+            }}
+            width="100%"
+          >
+            <Select.Option value="k8s">k8s</Select.Option>
+            <Select.Option value="helm">helm</Select.Option>
+          </Select>
           <Input width="100%" {...folderBindings} placeholder="配置文件的绝对目录" />
+          <Input width="100%" {...maxNumBindings} placeholder="最大数量" />
         </Modal.Content>
         <Modal.Action passive onClick={() => setVisible(false)}>
           取消
@@ -150,6 +180,7 @@ export default function Resources() {
       <Modal {...createFlowBindings}>
         <Modal.Title>申请应用</Modal.Title>
         <Modal.Content className="space-y-4">
+          <Input width="100%" {...flowNameBindings} placeholder="名称" />
           {Object.keys(dataConfig).map((key: string) => {
             return (
               <Input
@@ -164,9 +195,6 @@ export default function Resources() {
               />
             );
           })}
-          {/* <Input width="100%" {...detailNameBindings} placeholder="名称" />
-          <Input width="100%" {...cpuBindings} placeholder="CPU" />
-          <Input width="100%" {...memoryBindings} placeholder="内存" /> */}
         </Modal.Content>
         <Modal.Action passive onClick={() => setCreateFlowVisible(false)}>
           取消
