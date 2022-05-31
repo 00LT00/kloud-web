@@ -2,7 +2,7 @@ import { Button, Card, Loading, Text } from '@geist-ui/core';
 import { ArrowRightIcon } from '@heroicons/react/outline';
 import { useRequest } from 'ahooks';
 import axios from 'axios';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { useNavigate } from 'react-router-dom';
 

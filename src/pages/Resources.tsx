@@ -107,8 +107,8 @@ export default function Resources() {
             <Table
               data={resourcesData.data.map((d) => ({ ...d, folder: <Code>{d.folder}</Code> }))}
             >
-              <Table.Column prop="resource_id" label="ID" />
               <Table.Column prop="name" label="名称" />
+              <Table.Column prop="max_num" label="最大数量" />
               <Table.Column prop="folder" label="目录" />
               <Table.Column prop="type" label="类型" />
               <Table.Column
