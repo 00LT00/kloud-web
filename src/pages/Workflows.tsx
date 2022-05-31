@@ -36,7 +36,6 @@ export default function Workflows() {
   return (
       <div>
           <Headline title="审批">
-              <Button type="secondary">新建审批</Button>
           </Headline>
           <div className="border-t border-gray-200 py-10">
               <section className="max-w-5xl mx-auto">
@@ -74,7 +73,9 @@ export default function Workflows() {
                               ),
                           }))}
                       >
-                          <Table.Column prop="FlowID" label="ID" />
+                          <Table.Column prop="ApplicantID" label="申请人ID" />
+                          <Table.Column prop="CreatedAt" label="申请时间" />
+                          <Table.Column prop="ResourceID" label="资源ID" />
                           <Table.Column prop="action" label="操作" />
                       </Table>
                   )}

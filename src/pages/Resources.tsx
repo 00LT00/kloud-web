@@ -107,6 +107,7 @@ export default function Resources() {
             <Table
               data={resourcesData.data.map((d) => ({ ...d, folder: <Code>{d.folder}</Code> }))}
             >
+              <Table.Column prop="resource_id" label="资源ID" />
               <Table.Column prop="name" label="名称" />
               <Table.Column prop="max_num" label="最大数量" />
               <Table.Column prop="folder" label="目录" />
@@ -158,7 +159,7 @@ export default function Resources() {
         <Modal.Content className="space-y-4">
           <Input width="100%" {...nameBindings} placeholder="资源名称" />
           <Select
-            placeholder="选择资源名称"
+            placeholder="选择资源类型"
             onChange={(e: any) => {
               setResourceType(e);
             }}
